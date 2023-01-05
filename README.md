@@ -26,27 +26,27 @@ To build and run use docker compose command from root of the repo(runs locally o
 
 #### Get all orders
 
-```http
+```bash
   GET /api/v1/orders
 ```
 #### Get order
 
-```http
+```bash
   GET /api/v1/orders/{id}
 ```
 #### Post new order
 
-```http
+```bash
   POST /api/v1/orders
 ```
 #### Update order
 
-```http
+```bash
   PUT /api/v1/orders/{id}
 ```
 #### Delete order
 
-```http
+```bash
   DELETE /api/v1/orders/{id}
 ```
 
