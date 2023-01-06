@@ -17,6 +17,8 @@ func Run() error {
 		log.Error("failed to setup connection to database!")
 		return err
 	}
+	defer store.DB.Close()
+
 	err = store.Migrate(migrations.EmbedMigrations, ".")
 	if err != nil {
 		log.Error("failed to migrate database!")

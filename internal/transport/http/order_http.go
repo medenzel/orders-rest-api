@@ -62,7 +62,7 @@ func (h *Handler) GetAllOrders(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
 	var ord order.Order
 	if err := json.NewDecoder(r.Body).Decode(&ord); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -93,7 +93,7 @@ func (h *Handler) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 
 	var ord order.Order
 	if err := json.NewDecoder(r.Body).Decode(&ord); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
