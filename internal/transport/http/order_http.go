@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 	"github.com/medenzel/orders-rest-api/internal/order"
+	log "github.com/sirupsen/logrus"
 )
 
 type OrderService interface {
@@ -59,13 +62,45 @@ func (h *Handler) GetAllOrders(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type PostOrderRequest struct {
+	Description string `json:"description" validatate:"required"`
+	State       int    `json:"state" validate:"required,oneof=1 2 3 4"`
+	CreateAt    string `json:"create_at" validate:"omitempty,datetime=02/01/2006 15:04:05"`
+}
+
+func orderFromPostOrderRequest(por PostOrderRequest) order.Order {
+	return order.Order{
+		Description: por.Description,
+		State:       por.State,
+		CreateAt:    por.CreateAt,
+	}
+}
+
 func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
-	var ord order.Order
-	if err := json.NewDecoder(r.Body).Decode(&ord); err != nil {
+	var postOrderReq PostOrderRequest
+	if err := json.NewDecoder(r.Body).Decode(&postOrderReq); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	validate := validator.New()
+	err := validate.Struct(postOrderReq)
+	if err != nil {
+		log.Info(fmt.Errorf("post order validate: %w", err))
+		validationErrors := err.(validator.ValidationErrors)
+		errMsg := "Incorrect fields: "
+		for _, err := range validationErrors {
+			errMsg += err.StructField() + "|"
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		if err := json.NewEncoder(w).Encode(Response{Message: errMsg}); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+
+	ord := orderFromPostOrderRequest(postOrderReq)
 	postedOrd, err := h.Service.PostOrder(r.Context(), ord)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -77,6 +112,19 @@ func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+type UpdateOrderRequest struct {
+	Description string `json:"description" validatate:"required"`
+	State       int    `json:"state" validate:"required,oneof=1 2 3 4"`
+	CreateAt    string `json:"create_at" validate:"required,datetime=02/01/2006 15:04:05"`
+}
+
+func orderFromUpdateOrderRequest(uor UpdateOrderRequest) order.Order {
+	return order.Order{
+		Description: uor.Description,
+		State:       uor.State,
+	}
 }
 
 func (h *Handler) UpdateOrder(w http.ResponseWriter, r *http.Request) {
@@ -91,12 +139,30 @@ func (h *Handler) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ord order.Order
-	if err := json.NewDecoder(r.Body).Decode(&ord); err != nil {
+	var updateOrderReq UpdateOrderRequest
+	if err := json.NewDecoder(r.Body).Decode(&updateOrderReq); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	validate := validator.New()
+	err = validate.Struct(updateOrderReq)
+	if err != nil {
+		log.Info(fmt.Errorf("update order validate: %w", err))
+		validationErrors := err.(validator.ValidationErrors)
+		errMsg := "Incorrect fields: "
+		for _, err := range validationErrors {
+			errMsg += err.StructField() + "|"
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		if err := json.NewEncoder(w).Encode(Response{Message: errMsg}); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+
+	ord := orderFromUpdateOrderRequest(updateOrderReq)
 	updatedOrd, err := h.Service.UpdateOrder(r.Context(), intOrderID, ord)
 	if err != nil {
 		if errors.Is(err, order.ErrNoOrderFound) {
