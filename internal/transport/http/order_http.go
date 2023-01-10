@@ -121,7 +121,7 @@ func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-// PostOrderRequest - clone of order struct, helps to validate fields
+// UpdateOrderRequest - clone of order struct, helps to validate fields
 type UpdateOrderRequest struct {
 	Description string `json:"description" validatate:"required"`
 	State       int    `json:"state" validate:"required,oneof=1 2 3 4"`
@@ -133,6 +133,7 @@ func orderFromUpdateOrderRequest(uor UpdateOrderRequest) order.Order {
 	return order.Order{
 		Description: uor.Description,
 		State:       uor.State,
+		CreateAt:    uor.CreateAt,
 	}
 }
 

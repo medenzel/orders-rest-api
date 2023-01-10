@@ -55,8 +55,8 @@ func (h *Handler) mapRoutes() {
 	h.Router.Get("/api/v1/orders/{id}", h.GetOrder)
 	h.Router.Get("/api/v1/orders", h.GetAllOrders)
 	h.Router.Post("/api/v1/orders", h.PostOrder)
-	h.Router.Put("/api/v1/orders/{id}", h.UpdateOrder)
-	h.Router.Delete("/api/v1/orders/{id}", h.DeleteOrder)
+	h.Router.Put("/api/v1/orders/{id}", JWTAuth(h.UpdateOrder))
+	h.Router.Delete("/api/v1/orders/{id}", JWTAuth(h.DeleteOrder))
 
 	h.Router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)

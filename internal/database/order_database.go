@@ -85,7 +85,7 @@ func (db *Database) UpdateOrder(ctx context.Context, ID int, newOrd order.Order)
 		WHERE id = $1
 		RETURNING id;`, ID, newOrd.Description, newOrd.State, newOrd.CreateAt,
 	)
-	var updatedID string
+	var updatedID int
 	err := row.Scan(&updatedID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -93,6 +93,7 @@ func (db *Database) UpdateOrder(ctx context.Context, ID int, newOrd order.Order)
 		}
 		return order.Order{}, fmt.Errorf("update order in database: %w", err)
 	}
+	newOrd.ID = updatedID
 	return newOrd, nil
 }
 

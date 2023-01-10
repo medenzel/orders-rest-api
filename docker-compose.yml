@@ -21,11 +21,11 @@ services:
     environment:
       DB_USER: "medenzel"
       DB_PASSWORD: "qwerty"
-      #DB_DB: "postgres"
       DB_HOST: "db"
       DB_DBNAME: "orders-db"
       DB_PORT: "5432"
       SSL_MODE: "disable"
+      SECRET_KEY: "youdontseethis"
     ports:
       - "8080:8080"
     depends_on:
