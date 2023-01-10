@@ -27,6 +27,7 @@ func validateToken(accessToken string) bool {
 	return token.Valid
 }
 
+// JWTAuth - middleware function that provides basic auth for choosed endpoints
 func JWTAuth(original func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header["Authorization"]
