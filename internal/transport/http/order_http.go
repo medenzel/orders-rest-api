@@ -14,6 +14,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// OrderService - define the interface that the concrete implementation
+// has to adhere to
 type OrderService interface {
 	GetOrder(context.Context, int) (order.Order, error)
 	GetAllOrders(context.Context) ([]order.Order, error)
@@ -22,6 +24,7 @@ type OrderService interface {
 	DeleteOrder(context.Context, int) error
 }
 
+// GetOrder - retrieves an order by id and returns response
 func (h *Handler) GetOrder(w http.ResponseWriter, r *http.Request) {
 	stringOrderID := chi.URLParam(r, "id")
 	if stringOrderID == "" {
@@ -50,6 +53,7 @@ func (h *Handler) GetOrder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetAllOrder - retrieves all orders and returns response
 func (h *Handler) GetAllOrders(w http.ResponseWriter, r *http.Request) {
 	ords, err := h.Service.GetAllOrders(r.Context())
 	if err != nil {
@@ -62,12 +66,14 @@ func (h *Handler) GetAllOrders(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PostOrderRequest - clone of order struct, helps to validate fields
 type PostOrderRequest struct {
 	Description string `json:"description" validatate:"required"`
 	State       int    `json:"state" validate:"required,oneof=1 2 3 4"`
 	CreateAt    string `json:"create_at" validate:"omitempty,datetime=02/01/2006 15:04:05"`
 }
 
+// orderFromPostOrderRequest - converts the validated struct into order
 func orderFromPostOrderRequest(por PostOrderRequest) order.Order {
 	return order.Order{
 		Description: por.Description,
@@ -76,6 +82,7 @@ func orderFromPostOrderRequest(por PostOrderRequest) order.Order {
 	}
 }
 
+// PostOrder - adds a new order
 func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
 	var postOrderReq PostOrderRequest
 	if err := json.NewDecoder(r.Body).Decode(&postOrderReq); err != nil {
@@ -114,12 +121,14 @@ func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// PostOrderRequest - clone of order struct, helps to validate fields
 type UpdateOrderRequest struct {
 	Description string `json:"description" validatate:"required"`
 	State       int    `json:"state" validate:"required,oneof=1 2 3 4"`
 	CreateAt    string `json:"create_at" validate:"required,datetime=02/01/2006 15:04:05"`
 }
 
+// orderFromUpdateOrderRequest - converts the validated struct into order
 func orderFromUpdateOrderRequest(uor UpdateOrderRequest) order.Order {
 	return order.Order{
 		Description: uor.Description,
@@ -127,6 +136,7 @@ func orderFromUpdateOrderRequest(uor UpdateOrderRequest) order.Order {
 	}
 }
 
+// UpdateOrder - updates an order by ID
 func (h *Handler) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 	stringOrderID := chi.URLParam(r, "id")
 	if stringOrderID == "" {
@@ -179,6 +189,7 @@ func (h *Handler) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteOrder - deletes order by ID
 func (h *Handler) DeleteOrder(w http.ResponseWriter, r *http.Request) {
 	stringOrderID := chi.URLParam(r, "id")
 	if stringOrderID == "" {

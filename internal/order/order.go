@@ -59,6 +59,7 @@ func (s *Service) GetOrder(ctx context.Context, ID int) (Order, error) {
 	return ord, nil
 }
 
+// GetAllOrders - retrieves all orders from the database
 func (s *Service) GetAllOrders(ctx context.Context) ([]Order, error) {
 	ords, err := s.Store.GetAllOrders(ctx)
 	if err != nil {
