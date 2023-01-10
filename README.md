@@ -11,12 +11,6 @@ Go 1.18
 Docker
 ## Installation & Run
 
-To download this app use command
-
-```bash
-  go get github.com/medenzel/orders-rest-api
-```
-
 To build and run use docker compose command from root of the repo(runs locally on port 8080)
 ```bash
   docker compose up -d
