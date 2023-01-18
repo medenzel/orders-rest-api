@@ -80,13 +80,12 @@ func (db *Database) UpdateOrder(ctx context.Context, ID int, newOrd order.Order)
 		ctx,
 		`UPDATE orders SET
 		description = $2,
-		state = $3,
-		create_at = $4
+		state = $3
 		WHERE id = $1
-		RETURNING id;`, ID, newOrd.Description, newOrd.State, newOrd.CreateAt,
+		RETURNING id, create_at;`, ID, newOrd.Description, newOrd.State,
 	)
 	var updatedID int
-	err := row.Scan(&updatedID)
+	err := row.Scan(&updatedID, &newOrd.CreateAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return order.Order{}, order.ErrNoOrderFound

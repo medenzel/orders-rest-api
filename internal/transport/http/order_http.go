@@ -125,7 +125,6 @@ func (h *Handler) PostOrder(w http.ResponseWriter, r *http.Request) {
 type UpdateOrderRequest struct {
 	Description string `json:"description" validatate:"required"`
 	State       int    `json:"state" validate:"required,oneof=1 2 3 4"`
-	CreateAt    string `json:"create_at" validate:"required,datetime=02/01/2006 15:04:05"`
 }
 
 // orderFromUpdateOrderRequest - converts the validated struct into order
@@ -133,7 +132,6 @@ func orderFromUpdateOrderRequest(uor UpdateOrderRequest) order.Order {
 	return order.Order{
 		Description: uor.Description,
 		State:       uor.State,
-		CreateAt:    uor.CreateAt,
 	}
 }
 
