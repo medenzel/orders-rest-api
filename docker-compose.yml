@@ -4,6 +4,10 @@ services:
   db:
     image: postgres:14.6-alpine
     container_name: "orders-database"
+    deploy:
+      restart_policy: 
+        condition: on-failure
+        delay: 5s
     ports:
       - 5432:5432
     environment:
@@ -18,6 +22,10 @@ services:
   api:
     build: .
     container_name: "orders-rest-api"
+    deploy:
+      restart_policy: 
+        condition: on-failure
+        delay: 5s
     environment:
       DB_USER: "medenzel"
       DB_PASSWORD: "qwerty"
