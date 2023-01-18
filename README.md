@@ -19,9 +19,10 @@ To build and run use docker compose command from root of the repo(runs locally o
 ## API
 
 #### Get all orders
+Requiered query parameters: page_id (min = 1), page_size (min = 5, max = 10)
 
 ```bash
-  GET /api/v1/orders
+  GET /api/v1/orders?page_id=X&page_size=Y
 ```
 #### Get order
 

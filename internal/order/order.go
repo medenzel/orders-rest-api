@@ -28,7 +28,7 @@ type Order struct {
 // needs to implement
 type OrderStore interface {
 	GetOrder(context.Context, int) (Order, error)
-	GetAllOrders(context.Context) ([]Order, error)
+	GetAllOrders(context.Context, int, int) ([]Order, error)
 	PostOrder(context.Context, Order) (Order, error)
 	UpdateOrder(context.Context, int, Order) (Order, error)
 	DeleteOrder(context.Context, int) error
@@ -60,8 +60,8 @@ func (s *Service) GetOrder(ctx context.Context, ID int) (Order, error) {
 }
 
 // GetAllOrders - retrieves all orders from the database
-func (s *Service) GetAllOrders(ctx context.Context) ([]Order, error) {
-	ords, err := s.Store.GetAllOrders(ctx)
+func (s *Service) GetAllOrders(ctx context.Context, limit, offset int) ([]Order, error) {
+	ords, err := s.Store.GetAllOrders(ctx, limit, offset)
 	if err != nil {
 		log.Errorf("get all orders: %w", err)
 		return nil, ErrGettingAllOrders

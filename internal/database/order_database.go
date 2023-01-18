@@ -34,10 +34,13 @@ func (db *Database) GetOrder(ctx context.Context, ID int) (order.Order, error) {
 	return ord, nil
 }
 
-func (db *Database) GetAllOrders(ctx context.Context) ([]order.Order, error) {
+func (db *Database) GetAllOrders(ctx context.Context, limit, offset int) ([]order.Order, error) {
 	orders := make([]order.Order, 0)
 	rows, err := db.DB.QueryContext(ctx,
-		`SELECT id, description, state, create_at FROM orders;`)
+		`SELECT id, description, state, create_at
+		FROM orders
+		LIMIT $1
+		OFFSET $2;`, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("get all orders from database: %w", err)
 	}
